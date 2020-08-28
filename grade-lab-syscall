@@ -39,11 +39,11 @@ def test_trace_children():
     r.run_qemu(shell_script([
         'trace 2 usertests forkforkfork'
     ]))
-    r.match('test forkforkfork: 3: syscall fork -> 4')
-    r.match('^4: syscall fork -> 5')
+    r.match('3: syscall fork -> 4')
     r.match('^5: syscall fork -> \\d+')
     r.match('^6: syscall fork -> \\d+')
     r.match('^\\d+: syscall fork -> -1')
+    r.match('^ALL TESTS PASSED')
 
 @test(14, "sysinfotest")
 def test_sysinfotest():
