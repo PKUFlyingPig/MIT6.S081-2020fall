@@ -1,10 +1,17 @@
 struct file {
+#ifdef LAB_NET
+  enum { FD_NONE, FD_PIPE, FD_INODE, FD_DEVICE, FD_SOCK } type;
+#else
   enum { FD_NONE, FD_PIPE, FD_INODE, FD_DEVICE } type;
+#endif
   int ref; // reference count
   char readable;
   char writable;
   struct pipe *pipe; // FD_PIPE
   struct inode *ip;  // FD_INODE and FD_DEVICE
+#ifdef LAB_NET
+  struct sock *sock; // FD_SOCK
+#endif
   uint off;          // FD_INODE
   short major;       // FD_DEVICE
 };
@@ -26,7 +33,10 @@ struct inode {
   short minor;
   short nlink;
   uint size;
+#ifdef SOL_FS
+#else
   uint addrs[NDIRECT+1];
+#endif
 };
 
 // map major device number to device functions.
@@ -38,3 +48,4 @@ struct devsw {
 extern struct devsw devsw[];
 
 #define CONSOLE 1
+#define STATS   2
