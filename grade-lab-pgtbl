@@ -17,6 +17,8 @@ PTE_PRINT = """page table 0x0000000087f6e000
  .. .. ..511: pte 0x0000000020001c0b pa 0x0000000080007000"""
 
 VAL_RE = "(0x00000000[0-9a-f]+)"
+INDENT_RE = r"\s*\.\.\s*"
+INDENT_ESC = "\\\s*\.\.\\\s*"
 
 @test(10, "pte printout")
 def test_pteprint():
@@ -26,7 +28,9 @@ def test_pteprint():
     ]))
     r.match('^hi')
     p = re.compile(VAL_RE)
+    d = re.compile(INDENT_RE)
     for l in PTE_PRINT.splitlines():
+        l = d.sub(INDENT_ESC, l)
         l = p.sub(VAL_RE, l)
         r.match(r'^{}$'.format(l))
         if first:
