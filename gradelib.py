@@ -260,7 +260,7 @@ def check_time():
 
 def check_answers(file, n=10):
     try:
-        with open('answers-syscall.txt') as f:
+        with open(file) as f:
             d = f.read().strip()
             if len(d) < n:
                 raise AssertionError('%s does not seem to contain enough text' % file)
