@@ -36,12 +36,15 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 ### lab2 : syscall
 
-**read the chapter 2 and 4.4 4.5 carefully and make sure to understand what you are going to do**
+**read the chapter 2 and 3.5 4.4 4.5 carefully and make sure to understand what you are going to do**
 
 - system call tracing (moderate) : all the modification you need to do are listed in the lab guidance except for the entry you need to add for the syscall declaration and the syscall function pointer array  in the kernel/syscall.c (about line 90 to 120).
-- TBA.
-
-
+- sysinfo (moderate) : 
+  - remember to add the definition of your new added two helper functions in kernel/defs.h, otherwise you will receive compile error.
+  - read the lab guid carefully, especially that `nproc` field should be set to the number of processes whose `state` is **not** `UNUSED`. I spent one hour to find this stupid bug.
+  - use argaddr to get the sysinfo structure address provided by user in sys_sysinfo function implementation.
+  - nproc : allocproc function in proc.c may give you some hints.
+  - freemem : read chapter 3.5 in xv6 book may make you understand what happens in the kalloc.c.
 
 ## TBA
 
