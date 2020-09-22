@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import re
 import subprocess
 from gradelib import *
@@ -13,17 +14,27 @@ def test_answers():
 
 BACKTRACE_RE = r"^(0x000000008[0-9a-f]+)"
 
+def addr2line():
+    for f in ['riscv64-unknown-elf-addr2line', 'riscv64-linux-gnu-addr2line', 'addr2line', ]:
+        try:
+            devnull = open(os.devnull)
+            subprocess.Popen([f], stdout=devnull, stderr=devnull).communicate()
+            return f
+        except OSError:
+            continue
+    raise AssertionError('Cannot find the addr2line program')
+
 @test(10, "backtrace test")
 def test_backtracetest():
     r.run_qemu(shell_script([
         'bttest'
     ]))
-    
+    a2l = addr2line()
     matches = re.findall(BACKTRACE_RE, r.qemu.output, re.MULTILINE)
     assert_equal(len(matches), 3)
     files = ['sysproc.c', 'syscall.c', 'trap.c']
     for f, m in zip(files, matches):
-        result = subprocess.run(['addr2line', '-e', 'kernel/kernel', m], stdout=subprocess.PIPE)
+        result = subprocess.run([a2l, '-e', 'kernel/kernel', m], stdout=subprocess.PIPE)
         if not f in result.stdout.decode("utf-8"):
             raise AssertionError('Trace is incorrect; no %s' % f)
 
