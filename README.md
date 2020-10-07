@@ -46,6 +46,31 @@ if you want to have a clean copy of the original lab handout, just go to the [co
   - nproc : allocproc function in proc.c may give you some hints.
   - freemem : read chapter 3.5 in xv6 book may make you understand what happens in the kalloc.c. (kmem is a list of free pages and each page is 4096 bytes)
 
+### lab3 : pgtbl 
+
+**warning : this lab is extremly time-consuming**
+
+**read the chapter 3 and the code in proc.c/ vm.c carefully, understand the difference between the user address space and kernel address space**
+
+**because there are so many details in this lab, I wrapper my solution code with the title "solution for pgtbl ---- part x", I only modified the following files(vm.c, exec.c, proc.c, proc.h, defs.h), so you can search the title in these files to see my modification.**
+
+e.g.
+
+![image-20201007175222371](/Users/apple/Library/Application Support/typora-user-images/image-20201007175222371.png)
+
+- Print a page table (easy) :
+  - just follow the guidance
+  - see freewalk function for inspiration
+- kernel page table per process(hard) : 
+  - to understand my solution(especially the kvmcreate function), you need to first read the part3 problem, and notice that the user will not use virtual address over PLIC(0xC000000) ---- I think this condition is just for simplification. After you understand this, you should find that the user will only modify the address lies in the first entry of the pagetable. That is why I just copy the 1 to 511 entry of kernel_pagetable into per process's pagetable. Then the kvmfree function is also easy to understand.
+  - the second step is to call the two function above to create a new kernel pagetable for a new process that is allocated (in allocproc()) and free the kernel pagetable when the process is killed (in freeproc()).
+  - the last step is to modify the scheduler()  to switch the kernel pagetable for each process. Remember that the scheduler will use the original kernel page table !
+- simplify copyin / copyinstr (hard) :
+  - add a new function to copy PTEs from the user page table into process's kernel pagetable. (see kvmmapuser() in vm.c for more details)
+  - At each point where the kernel changes a process's user mappings, change the process's kernel page table in the same way. Such points include `fork()`, `exec()`, and `growproc()`. The guidance says that you need to modify the sbrk(). I instead modified growproc(). Both are ok.
+  - Don't forget to modify the copyin() and copyinstr() methods to call copyin_new and copyinstr_new. 
+  - You also need to add the newly added functions into defs.h.
+
 ## TBA
 
 
