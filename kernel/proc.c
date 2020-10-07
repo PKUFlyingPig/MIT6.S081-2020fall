@@ -121,6 +121,10 @@ found:
     return 0;
   }
 
+  // ======= solution for pgtbl ---- part 2 ========
+  p->kpagetable = kvmcreate();
+  // ===============================================
+
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
@@ -141,6 +145,11 @@ freeproc(struct proc *p)
   p->trapframe = 0;
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+  //==== solution for pgtbl ---- part 2 ========
+  if(p->kpagetable) 
+    kvmfree(p->kpagetable, p->sz);
+  p->kpagetable = 0;
+  // ===========================================
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;
@@ -230,6 +239,10 @@ userinit(void)
 
   p->state = RUNNABLE;
 
+  // =========== solution for pgtbl ---- part 3 =============
+  kvmmapuser(p->pid, p->kpagetable, p->pagetable, p->sz, 0);
+  // ========================================================
+
   release(&p->lock);
 }
 
@@ -249,6 +262,9 @@ growproc(int n)
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
+  // =========== solution for pgtbl ---- part 3 =============
+  kvmmapuser(p->pid, p->kpagetable, p->pagetable, sz, p->sz);
+  // ========================================================
   p->sz = sz;
   return 0;
 }
@@ -294,6 +310,10 @@ fork(void)
   pid = np->pid;
 
   np->state = RUNNABLE;
+  // ======= solution for pgtbl ---- part 3 =========
+  // remember to map to the new process's kernel page table 
+  kvmmapuser(np->pid, np->kpagetable, np->pagetable, np->sz, 0);
+  // ================================================
 
   release(&np->lock);
 
@@ -473,11 +493,23 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+
+        // ====== solution for pgtbl ---- part 2 ========
+        // switch kernel page table
+        w_satp(MAKE_SATP(p->kpagetable));
+        sfence_vma();
+        // ==============================================
+
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
         // It should have changed its p->state before coming back.
         c->proc = 0;
+
+        // ======= solution for pgtbl ---- part 2 ========
+        // switch to scheduler's kernel page table
+        kvminithart();
+        // ===============================================
 
         found = 1;
       }

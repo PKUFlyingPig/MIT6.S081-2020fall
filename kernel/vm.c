@@ -121,6 +121,30 @@ kvmmap(uint64 va, uint64 pa, uint64 sz, int perm)
     panic("kvmmap");
 }
 
+// ========= solution for pgtbl ---- part 3 =============================
+// copy PTEs from the user page table into this proc's kernel page table
+void
+kvmmapuser(int pid, pagetable_t kpagetable, pagetable_t upagetable, uint64 newsz, uint64 oldsz)
+{
+  uint64 va;
+  pte_t *upte;
+  pte_t *kpte;
+
+  if(newsz >= PLIC)
+    panic("kvmmapuser: newsz too large");
+
+  for (va = oldsz; va < newsz; va += PGSIZE) {
+    upte = walk(upagetable, va, 0);
+    kpte = walk(kpagetable, va, 1);
+    *kpte = *upte;
+    // because the user mapping in kernel page table is only used for copyin 
+    // so the kernel don't need to have the W,X,U bit turned on
+    *kpte &= ~(PTE_U|PTE_W|PTE_X);
+  }
+}
+// ========================================================================
+
+
 // translate a kernel virtual address to
 // a physical address. only needed for
 // addresses on the stack.
@@ -206,6 +230,65 @@ uvmcreate()
   memset(pagetable, 0, PGSIZE);
   return pagetable;
 }
+
+/* ========  solution for pgtbl ---- part 2  ============ */
+
+// kvmmap is only set for the original kernel page table, so we need to use a new
+// kvmmap function to map page for all the kernel page tables (each proc has one page table)
+void 
+kvmmapkern(pagetable_t pagetable, uint64 va, uint64 pa, uint64 sz, int perm)
+{
+  if (mappages(pagetable, va, sz, pa, perm) != 0) 
+    panic("kvmmap");
+}
+
+// proc's version of kvminit
+pagetable_t
+kvmcreate() 
+{
+  pagetable_t pagetable;
+  int i;
+
+  pagetable = uvmcreate();
+  for(i = 1; i < 512; i++) {
+    pagetable[i] = kernel_pagetable[i];
+  }
+
+  // uart registers
+  kvmmapkern(pagetable, UART0, UART0, PGSIZE, PTE_R | PTE_W);
+
+  // virtio mmio disk interface
+  kvmmapkern(pagetable, VIRTIO0, VIRTIO0, PGSIZE, PTE_R | PTE_W);
+
+  // CLINT
+  kvmmapkern(pagetable, CLINT, CLINT, 0x10000, PTE_R | PTE_W);
+
+  // PLIC
+  kvmmapkern(pagetable, PLIC, PLIC, 0x400000, PTE_R | PTE_W);
+
+  return pagetable;
+}
+
+
+void 
+kvmfree(pagetable_t kpagetale, uint64 sz) 
+{
+  pte_t pte = kpagetale[0];
+  pagetable_t level1 = (pagetable_t) PTE2PA(pte);
+  for (int i = 0; i < 512; i++) {
+    pte_t pte = level1[i];
+    if (pte & PTE_V) {
+      uint64 level2 = PTE2PA(pte);
+      kfree((void *) level2);
+      level1[i] = 0;
+    }
+  }
+  kfree((void *) level1);
+  kfree((void *) kpagetale);
+}
+
+/* =======  end of solution for pgtbl ============ */
+
 
 // Load the user initcode into address 0 of pagetable,
 // for the very first process.
@@ -379,6 +462,10 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
 int
 copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 {
+  // ==== specialized for pgtbl =======
+  return copyin_new(pagetable, dst, srcva, len);
+  // ==================================
+
   uint64 n, va0, pa0;
 
   while(len > 0){
@@ -405,6 +492,10 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 int
 copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
 {
+  // ========= solution for pgtbl ---- part 3 ==========
+  return copyinstr_new(pagetable, dst, srcva, max);
+  // ===================================================
+  
   uint64 n, va0, pa0;
   int got_null = 0;
 
@@ -441,6 +532,7 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   }
 }
 
+// ======== solution for pgtbl ---- part 1=============
 void
 vmprinthelper(pagetable_t pagetable, int level)
 {
@@ -465,4 +557,5 @@ vmprint(pagetable_t pagetable)
 {
   printf("page table %p\n", pagetable);
   vmprinthelper(pagetable, 1);
+// ======================================================
 }

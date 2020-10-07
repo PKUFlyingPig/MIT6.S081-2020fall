@@ -178,7 +178,16 @@ uint64          walkaddr(pagetable_t, uint64);
 int             copyout(pagetable_t, uint64, char *, uint64);
 int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
+// ======== specialized for pgtbl ---- part1 & 2 & 3 =========
 void            vmprint(pagetable_t);
+void            kvmmapkern(pagetable_t, uint64, uint64, uint64, int);
+pagetable_t     kvmcreate();
+void            kvmfree(pagetable_t, uint64);
+void            kvmmapuser(int, pagetable_t, pagetable_t, uint64, uint64);
+// vmcopyin.c
+int 			copyin_new(pagetable_t, char*, uint64, uint64);
+int 			copyinstr_new(pagetable_t, char*, uint64, uint64);
+// ===========================================================
 
 // plic.c
 void            plicinit(void);
