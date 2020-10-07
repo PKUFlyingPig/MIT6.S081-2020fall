@@ -54,10 +54,6 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 **because there are so many details in this lab, I wrapper my solution code with the title "solution for pgtbl ---- part x", I only modified the following files(vm.c, exec.c, proc.c, proc.h, defs.h), so you can search the title in these files to see my modification.**
 
-e.g.
-
-![image-20201007175222371](/Users/apple/Library/Application Support/typora-user-images/image-20201007175222371.png)
-
 - Print a page table (easy) :
   - just follow the guidance
   - see freewalk function for inspiration
