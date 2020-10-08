@@ -17,7 +17,6 @@ struct entry *table[NBUCKET];
 int keys[NKEYS];
 int nthread = 1;
 
-
 double
 now()
 {
@@ -54,7 +53,6 @@ void put(int key, int value)
     // the new is new.
     insert(key, value, &table[i], table[i]);
   }
-
 }
 
 static struct entry*
@@ -104,7 +102,6 @@ main(int argc, char *argv[])
   pthread_t *tha;
   void *value;
   double t1, t0;
-
 
   if (argc < 2) {
     fprintf(stderr, "Usage: %s nthreads\n", argv[0]);
