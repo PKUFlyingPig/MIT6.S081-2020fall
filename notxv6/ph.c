@@ -17,10 +17,6 @@ struct entry *table[NBUCKET];
 int keys[NKEYS];
 int nthread = 1;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> a852a6836e9a1c2c2e7c53d0d40debff3f8a044f
 double
 now()
 {
@@ -57,10 +53,6 @@ void put(int key, int value)
     // the new is new.
     insert(key, value, &table[i], table[i]);
   }
-<<<<<<< HEAD
-
-=======
->>>>>>> a852a6836e9a1c2c2e7c53d0d40debff3f8a044f
 }
 
 static struct entry*
@@ -111,10 +103,6 @@ main(int argc, char *argv[])
   void *value;
   double t1, t0;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> a852a6836e9a1c2c2e7c53d0d40debff3f8a044f
   if (argc < 2) {
     fprintf(stderr, "Usage: %s nthreads\n", argv[0]);
     exit(-1);
