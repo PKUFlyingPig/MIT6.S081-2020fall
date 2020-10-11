@@ -19,6 +19,11 @@ def test_uthread():
     if not re.findall('\n'.join(expected), r.qemu.output, re.M):
         raise AssertionError('Output does not match expected output')
 
+@test(5, "answers-thread.txt")
+def test_answers():
+    # just a simple sanity check, will be graded manually
+    check_answers("answers-thread.txt")
+    
 # test the first ph task: add locks to eliminate the missing keys.
 @test(10, "ph_safe")
 def test_ph_safe():
