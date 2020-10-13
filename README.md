@@ -79,6 +79,10 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
   - just after the jalr to printf, ra saves the return address, which is 0x38
 
+  - the output is "He110 world". If the RISC-V were instead big-endian, we need to set i to 0x726c6400 in order to yield the same output. We don't need to change 57616 to a different value.
+  
+  - the value in register a2 will be printed after 'y=', which is quite random.
+  
     
 
 
