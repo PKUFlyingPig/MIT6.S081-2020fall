@@ -46,6 +46,8 @@ thread(void *xa)
     barrier();
     usleep(random() % 100);
   }
+
+  return 0;
 }
 
 int
