@@ -67,7 +67,19 @@ if you want to have a clean copy of the original lab handout, just go to the [co
   - Don't forget to modify the copyin() and copyinstr() methods to call copyin_new and copyinstr_new. 
   - You also need to add the newly added functions into defs.h.
 
-## TBA
+### lab4 traps
+
+- RISCV - assembly :
+
+  - a0-7 contains arguments to functions. a2 holds 13 in main's call to printf.
+
+  - at address 0x26, we can see the complier directly loads 12 into a1 register, which is just the return value of f(8) + 1.
+
+  - printf lies at address 0x630
+
+  - just after the jalr to printf, ra saves the return address, which is 0x38
+
+    
 
 
 
