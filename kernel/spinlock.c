@@ -8,12 +8,29 @@
 #include "proc.h"
 #include "defs.h"
 
+#ifdef LAB_LOCK
+#define NLOCK 1000
+
+static int nlock;
+static struct spinlock *locks[NLOCK];
+#endif
+
+// assumes locks are not freed
+
 void
 initlock(struct spinlock *lk, char *name)
 {
   lk->name = name;
   lk->locked = 0;
   lk->cpu = 0;
+#ifdef LAB_LOCK
+  lk->nts = 0;
+  lk->n = 0;
+  if(nlock >= NLOCK)
+    panic("initlock");
+  locks[nlock] = lk;
+  nlock++;
+#endif  
 }
 
 // Acquire the lock.
@@ -25,12 +42,21 @@ acquire(struct spinlock *lk)
   if(holding(lk))
     panic("acquire");
 
+#ifdef LAB_LOCK
+    __sync_fetch_and_add(&(lk->n), 1);
+#endif      
+
   // On RISC-V, sync_lock_test_and_set turns into an atomic swap:
   //   a5 = 1
   //   s1 = &lk->locked
   //   amoswap.w.aq a5, a5, (s1)
-  while(__sync_lock_test_and_set(&lk->locked, 1) != 0)
-    ;
+  while(__sync_lock_test_and_set(&lk->locked, 1) != 0) {
+#ifdef LAB_LOCK
+    __sync_fetch_and_add(&(lk->nts), 1);
+#else
+   ;
+#endif
+  }
 
   // Tell the C compiler and the processor to not move loads or stores
   // past this point, to ensure that the critical section's memory
@@ -108,3 +134,51 @@ pop_off(void)
   if(c->noff == 0 && c->intena)
     intr_on();
 }
+
+#ifdef LAB_LOCK
+int
+snprint_lock(char *buf, int sz, struct spinlock *lk)
+{
+  int n = 0;
+  if(lk->n > 0) {
+    n = snprintf(buf, sz, "lock: %s: #fetch-and-add %d #acquire() %d\n",
+                 lk->name, lk->nts, lk->n);
+  }
+  return n;
+}
+
+int
+statslock(char *buf, int sz) {
+  int n;
+  int tot = 0;
+  
+  n = snprintf(buf, sz, "--- lock kmem/bcache stats\n");
+  for(int i = 0; i < NLOCK; i++) {
+    if(locks[i] == 0)
+      break;
+    if(strncmp(locks[i]->name, "bcache", strlen("bcache")) == 0 ||
+       strncmp(locks[i]->name, "kmem", strlen("kmem")) == 0) {
+      tot += locks[i]->nts;
+      n += snprint_lock(buf +n, sz-n, locks[i]);
+    }
+  }
+  
+  n += snprintf(buf+n, sz-n, "--- top 5 contended locks:\n");
+  int last = 100000000;
+  // stupid way to compute top 5 contended locks
+  for(int t = 0; t < 5; t++) {
+    int top = 0;
+    for(int i = 0; i < NLOCK; i++) {
+      if(locks[i] == 0)
+        break;
+      if(locks[i]->nts > locks[top]->nts && locks[i]->nts < last) {
+        top = i;
+      }
+    }
+    n += snprint_lock(buf+n, sz-n, locks[top]);
+    last = locks[top]->nts;
+  }
+  n += snprintf(buf+n, sz-n, "tot= %d\n", tot);
+  return n;
+}
+#endif

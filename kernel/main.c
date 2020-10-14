@@ -12,6 +12,9 @@ main()
 {
   if(cpuid() == 0){
     consoleinit();
+#if defined(LAB_PGTBL) || defined(LAB_LOCK)
+    statsinit();
+#endif
     printfinit();
     printf("\n");
     printf("xv6 kernel is booting\n");
@@ -28,6 +31,10 @@ main()
     iinit();         // inode cache
     fileinit();      // file table
     virtio_disk_init(); // emulated hard disk
+#ifdef LAB_NET
+    pci_init();
+    sockinit();
+#endif    
     userinit();      // first user process
     __sync_synchronize();
     started = 1;
