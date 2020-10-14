@@ -33,10 +33,7 @@ struct inode {
   short minor;
   short nlink;
   uint size;
-#ifdef SOL_FS
-#else
   uint addrs[NDIRECT+1];
-#endif
 };
 
 // map major device number to device functions.
