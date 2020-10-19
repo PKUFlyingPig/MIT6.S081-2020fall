@@ -9,13 +9,39 @@
 #include "defs.h"
 
 #ifdef LAB_LOCK
-#define NLOCK 1000
+#define NLOCK 500
 
-static int nlock;
 static struct spinlock *locks[NLOCK];
-#endif
+struct spinlock lock_locks;
 
-// assumes locks are not freed
+void
+freelock(struct spinlock *lk)
+{
+  acquire(&lock_locks);
+  int i;
+  for (i = 0; i < NLOCK; i++) {
+    if(locks[i] == lk) {
+      locks[i] = 0;
+      break;
+    }
+  }
+  release(&lock_locks);
+}
+
+static void
+findslot(struct spinlock *lk) {
+  acquire(&lock_locks);
+  int i;
+  for (i = 0; i < NLOCK; i++) {
+    if(locks[i] == 0) {
+      locks[i] = lk;
+      release(&lock_locks);
+      return;
+    }
+  }
+  panic("findslot");
+}
+#endif
 
 void
 initlock(struct spinlock *lk, char *name)
@@ -26,10 +52,7 @@ initlock(struct spinlock *lk, char *name)
 #ifdef LAB_LOCK
   lk->nts = 0;
   lk->n = 0;
-  if(nlock >= NLOCK)
-    panic("initlock");
-  locks[nlock] = lk;
-  nlock++;
+  findslot(lk);
 #endif  
 }
 
@@ -151,7 +174,8 @@ int
 statslock(char *buf, int sz) {
   int n;
   int tot = 0;
-  
+
+  acquire(&lock_locks);
   n = snprintf(buf, sz, "--- lock kmem/bcache stats\n");
   for(int i = 0; i < NLOCK; i++) {
     if(locks[i] == 0)
@@ -179,6 +203,7 @@ statslock(char *buf, int sz) {
     last = locks[top]->nts;
   }
   n += snprintf(buf+n, sz-n, "tot= %d\n", tot);
+  release(&lock_locks);  
   return n;
 }
 #endif

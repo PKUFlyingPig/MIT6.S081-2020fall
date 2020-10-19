@@ -119,6 +119,9 @@ void            initlock(struct spinlock*, char*);
 void            release(struct spinlock*);
 void            push_off(void);
 void            pop_off(void);
+#ifdef LAB_LOCK
+void            freelock(struct spinlock*);
+#endif
 
 // sleeplock.c
 void            acquiresleep(struct sleeplock*);
