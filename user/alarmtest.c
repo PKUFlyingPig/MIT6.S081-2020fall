@@ -93,6 +93,7 @@ test1()
   if(count < 10){
     printf("\ntest1 failed: too few calls to the handler\n");
   } else if(i != j){
+    printf("i : %d, j : %d\n", i, j);
     // the loop should have called foo() i times, and foo() should
     // have incremented j once per call, so j should equal i.
     // once possible source of errors is that the handler may
