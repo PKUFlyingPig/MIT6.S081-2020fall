@@ -69,21 +69,23 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 ### lab4 traps
 
-- RISCV - assembly :
+- RISCV - assembly (easy) :
 
   - a0-7 contains arguments to functions. a2 holds 13 in main's call to printf.
-
-  - at address 0x26, we can see the complier directly loads 12 into a1 register, which is just the return value of f(8) + 1.
-
+- at address 0x26, we can see the complier directly loads 12 into a1 register, which is just the return value of f(8) + 1.
   - printf lies at address 0x630
-
-  - just after the jalr to printf, ra saves the return address, which is 0x38
-
+- just after the jalr to printf, ra saves the return address, which is 0x38
   - the output is "He110 world". If the RISC-V were instead big-endian, we need to set i to 0x726c6400 in order to yield the same output. We don't need to change 57616 to a different value.
-  
-  - the value in register a2 will be printed after 'y=', which is quite random.
-  
-    
+- the value in register a2 will be printed after 'y=', which is quite random.
 
-
+- Backtrace (moderate) :
+  - use r_fp() in backtrace to get current frame pointer
+  - using `PGROUNDDOWN(fp)` and `PGROUNDUP(fp)` (see `kernel/riscv.h`. These number are helpful for `backtrace` to terminate its loop). 
+- Alarm (hard) :
+  - this  lab is not as hard as the pgtbl, so do not think too complicatedly, the answer is quite straight-forward and easy to get.
+  - follow the guidance step by step, all the details are all in the guidance
+  - I add a new field (allow_entrance_handler) in proc structure to avoid handler re-entrant. 
+  - the bugs that I encountered :
+    - At first I add one more trapframe to save all the registers, but this implementation will not pass the usertests
+    - You need to save s-registers, but I am a little confused about it. Since if the handler function follows the RISC-V calling convention, it needs to save the s-register before using it. So why the original process's s-registers get corrupted ?
 
