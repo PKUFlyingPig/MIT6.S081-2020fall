@@ -65,7 +65,7 @@ readfile(char *file, int nbytes, int inc)
   close(fd);
 }
 
-int ntas(void)
+int ntas(int print)
 {
   int n;
   char *c;
@@ -75,6 +75,8 @@ int ntas(void)
   }
   c = strchr(buf, '=');
   n = atoi(c+2);
+  if(print)
+    printf("%s", buf);
   return n;
 }
 
@@ -106,7 +108,7 @@ test0()
       exit(1);
     }
   }
-  m = ntas();
+  m = ntas(0);
   for(int i = 0; i < NCHILD; i++){
     dir[0] = '0' + i;
     int pid = fork();
@@ -130,8 +132,7 @@ test0()
     wait(0);
   }
   printf("test0 results:\n");
-  n = ntas();
-  printf("tot = %d\n", n - m);
+  n = ntas(1);
   if (n-m < 500)
     printf("test0: OK\n");
   else
