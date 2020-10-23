@@ -29,7 +29,7 @@ createfile(char *file, int nblock)
   
   fd = open(file, O_CREATE | O_RDWR);
   if(fd < 0){
-    printf("test0 create %s failed\n", file);
+    printf("createfile %s failed\n", file);
     exit(-1);
   }
   for(i = 0; i < nblock; i++) {
@@ -49,11 +49,11 @@ readfile(char *file, int nbytes, int inc)
   int i;
 
   if(inc > BSIZE) {
-    printf("test0: inc too large\n");
+    printf("readfile: inc too large\n");
     exit(-1);
   }
   if ((fd = open(file, O_RDONLY)) < 0) {
-    printf("test0 open %s failed\n", file);
+    printf("readfile open %s failed\n", file);
     exit(-1);
   }
   for (i = 0; i < nbytes; i += inc) {
@@ -65,7 +65,7 @@ readfile(char *file, int nbytes, int inc)
   close(fd);
 }
 
-int ntas(int print)
+int ntas(void)
 {
   int n;
   char *c;
@@ -73,8 +73,6 @@ int ntas(int print)
   if (statistics(buf, SZ) <= 0) {
     fprintf(2, "ntas: no stats\n");
   }
-  if(print)
-    printf("%s", buf);
   c = strchr(buf, '=');
   n = atoi(c+2);
   return n;
@@ -86,7 +84,7 @@ test0()
   char file[2];
   char dir[2];
   enum { N = 10, NCHILD = 3 };
-  int n;
+  int m, n;
 
   dir[0] = '0';
   dir[1] = '\0';
@@ -108,7 +106,7 @@ test0()
       exit(1);
     }
   }
-  ntas(0);
+  m = ntas();
   for(int i = 0; i < NCHILD; i++){
     dir[0] = '0' + i;
     int pid = fork();
@@ -132,8 +130,9 @@ test0()
     wait(0);
   }
   printf("test0 results:\n");
-  n = ntas(1);
-  if (n < 500)
+  n = ntas();
+  printf("tot = %d\n", n - m);
+  if (n-m < 500)
     printf("test0: OK\n");
   else
     printf("test0: FAIL\n");

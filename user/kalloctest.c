@@ -22,7 +22,7 @@ main(int argc, char *argv[])
   exit(0);
 }
 
-int ntas(int print)
+int ntas(void)
 {
   int n;
   char *c;
@@ -30,8 +30,6 @@ int ntas(int print)
   if (statistics(buf, SZ) <= 0) {
     fprintf(2, "ntas: no stats\n");
   }
-  if(print)
-    printf("%s", buf);
   c = strchr(buf, '=');
   n = atoi(c+2);
   return n;
@@ -42,7 +40,7 @@ void test1(void)
   void *a, *a1;
   int n, m;
   printf("start test1\n");  
-  m = ntas(0);
+  m = ntas();
   for(int i = 0; i < NCHILD; i++){
     int pid = fork();
     if(pid < 0){
@@ -67,7 +65,8 @@ void test1(void)
     wait(0);
   }
   printf("test1 results:\n");
-  n = ntas(1);
+  n = ntas();
+  printf("tot = %d", n);
   if(n-m < 10) 
     printf("test1 OK\n");
   else
