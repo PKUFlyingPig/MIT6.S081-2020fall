@@ -20,11 +20,15 @@ and now you are in the utils branch which contains my solution to the specific l
 
 if you want to have a clean copy of the original lab handout, just go to the [course website](https://pdos.csail.mit.edu/6.828/2020/schedule.html) and follow the lab guidance. Hope you enjoy your OS journey.
 
-## Answer for each lab
+
+
+## Hints for each lab
 
 ### lab1: util
 
-**every program must end with exit(0) !!! !!! **
+----
+
+**every program must end with exit(0)!!**
 
 - sleep (easy) : just follow the guidance
 - pingpong (easy) : You only need to transfer any byte you want, but not transfer "pingpong" the string itself. When the parent send the byte, remember to explicitly wait for the child to reply.
@@ -35,6 +39,8 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 
 ### lab2 : syscall
+
+----
 
 **read the chapter 2 and 3.5 4.4 4.5 carefully and make sure to understand what you are going to do**
 
@@ -47,6 +53,8 @@ if you want to have a clean copy of the original lab handout, just go to the [co
   - freemem : read chapter 3.5 in xv6 book may make you understand what happens in the kalloc.c. (kmem is a list of free pages and each page is 4096 bytes)
 
 ### lab3 : pgtbl 
+
+----
 
 **warning : this lab is extremly time-consuming**
 
@@ -69,14 +77,15 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 ### lab4 traps
 
-- RISCV - assembly (easy) :
+----
 
+- RISCV - assembly (easy) :
   - a0-7 contains arguments to functions. a2 holds 13 in main's call to printf.
-- at address 0x26, we can see the complier directly loads 12 into a1 register, which is just the return value of f(8) + 1.
+  - at address 0x26, we can see the complier directly loads 12 into a1 register, which is just the return value of f(8) + 1.
   - printf lies at address 0x630
-- just after the jalr to printf, ra saves the return address, which is 0x38
+  - just after the jalr to printf, ra saves the return address, which is 0x38
   - the output is "He110 world". If the RISC-V were instead big-endian, we need to set i to 0x726c6400 in order to yield the same output. We don't need to change 57616 to a different value.
-- the value in register a2 will be printed after 'y=', which is quite random.
+  - the value in register a2 will be printed after 'y=', which is quite random.
 
 - Backtrace (moderate) :
   - use r_fp() in backtrace to get current frame pointer
@@ -89,3 +98,16 @@ if you want to have a clean copy of the original lab handout, just go to the [co
     - At first I add one more trapframe to save all the registers, but this implementation will not pass the usertests
     - You need to save s-registers, but I am a little confused about it. Since if the handler function follows the RISC-V calling convention, it needs to save the s-register before using it. So why the original process's s-registers get corrupted ?
 
+Lab5 & Lab6 are in debugging .............
+
+### lab7 multithreading
+
+----
+
+- Uthread (moderate) :
+  - your code can be quite similar to the code in switch.S and proc.h (almost the same)
+  - think twice when you assign value to the thread's stack pointer in thread_create ! ( remember that the stack is growing down in the address space)
+- Using threads :
+  - when you call insert() in put(), you already give the current head of the bucket as a variable to the insert() function, so if one thread has called insert but has not updated the head of the bucket, and now another thread calls insert() with an old head of the bucket, then the wrong occurs.
+- Barrier :
+  - nothing special, remember that when one thread wake up, it will immediately acquire the lock.
