@@ -258,7 +258,7 @@ def check_time():
     except IOError:
         raise AssertionError('Cannot read time.txt')
 
-def check_answers(file, n=10):
+def check_answers(file, n=1):
     try:
         with open(file) as f:
             d = f.read().strip()
