@@ -98,7 +98,23 @@ if you want to have a clean copy of the original lab handout, just go to the [co
     - At first I add one more trapframe to save all the registers, but this implementation will not pass the usertests
     - You need to save s-registers, but I am a little confused about it. Since if the handler function follows the RISC-V calling convention, it needs to save the s-register before using it. So why the original process's s-registers get corrupted ?
 
-Lab5 & Lab6 are in debugging .............
+### lab5 Lazy
+
+---
+
+- eliminate allocation from sbrk() (easy)
+  - so easy
+- lazy allocation (moderate)
+  - You need to modify trap.c/usertrap() to handle the page fault. You can check whether a fault is a page fault by seeing if r_scause() is 13 or 15. If so, use kalloc() to allocate physical memory and then use mappage() to add this physical memory into the user pagetable.
+  - Modify uvmunmap() function. Because when the OS want to unmap the address which is requested by the user program but have not yet been allocated, it orginally will call panic() to abort. But since it may because of lazy allocation, we will allow this to happen.(you can simply change the "panic" into "continue")
+- Lazytests and Usertests (moderate)
+  - handle negative sbrk() arguments : remember to deallocate.
+  - you need to kill the process if the address is illegal (below the stack or above the heap). the p->sz and p->trapframe-sp may help you. Remeber that in xv6, user address space's heap is above its stack, which may be not consistent with your common knowledge.
+  - If you see the error "incomplete type proc", include "spinlock.h" then "proc.h".
+  - Handle the parent-to-child memory copy in fork() correctly : modify uvmcopy(), which is similar to the modification you made to the uvmunmap() funcation.
+  - Handle the case in which a process passes a valid address from sbrk() to a system call such as read or write, but the memory for that address has not yet been allocated : you only need to modify copyin() and copyout() function. Why we need to do that? because usertrap() only handle the page fault in the user program, but copyin() and copyout() are called in the kernel, which can not be handled by usertrap(). So you can just copy the code from usertrap() to handle this case. 
+
+Lab6 are in debugging .............
 
 ### lab7 multithreading
 
