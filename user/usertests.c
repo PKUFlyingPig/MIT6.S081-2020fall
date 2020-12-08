@@ -2685,7 +2685,7 @@ main(int argc, char *argv[])
     void (*f)(char *);
     char *s;
   } tests[] = {
-    {execout, "execout"},
+//    {execout, "execout"},
     {copyin, "copyin"},
     {copyout, "copyout"},
     {copyinstr1, "copyinstr1"},

@@ -70,9 +70,9 @@ usertrap(void)
   } else if (r_scause() == 13 || r_scause() == 15) // page fault
   {
     uint64 va = r_stval();
-    if (va > p->sz) {
+    if (va >= p->sz || va < p->trapframe->sp) {
       // page-faults on a virtual memory address higher than any allocated with sbrk()
-      // or lower than the stack 
+      // or lower than the stack. In xv6, heap is higher than stack
       p->killed = 1;
     } else {
       uint64 ka = (uint64) kalloc();
