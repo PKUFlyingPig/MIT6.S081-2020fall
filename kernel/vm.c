@@ -188,12 +188,8 @@ uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       panic("uvmunmap: not mapped");
     if(PTE_FLAGS(*pte) == PTE_V)
       panic("uvmunmap: not a leaf");
-
-    uint64 pa = PTE2PA(*pte);
-    acquire(&ref_cnt_lock);
-    reference_count[pa>>12] -= 1;
-    release(&ref_cnt_lock);
     if(do_free){
+      uint64 pa = PTE2PA(*pte);
       kfree((void*)pa);
     }
     *pte = 0;
@@ -330,7 +326,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
     *pte &= ~PTE_W;   // both child and parent can not write into this page
     *pte |= PTE_COW;  // flag the page as copy on write
     flags = PTE_FLAGS(*pte);
-    if(mappages(new, i, PGSIZE, (uint64)pa, flags) != 0){
+    if(mappages(new, i, PGSIZE, pa, flags) != 0){
       goto err;
     }
   }

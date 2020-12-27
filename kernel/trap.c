@@ -29,6 +29,33 @@ trapinithart(void)
   w_stvec((uint64)kernelvec);
 }
 
+// allocate a new page for the COW
+// return -1 if the va is invalid or illegal.
+int cowhandler(pagetable_t pagetable, uint64 va)
+{
+  if (va >= MAXVA) 
+    return -1;
+  pte_t *pte;
+  pte = walk(pagetable, va, 0);
+  if (pte == 0) return -1;
+  if ((*pte & PTE_U) == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_COW) == 0)
+    return -1;
+
+  // allocate a new page
+  uint64 pa = PTE2PA(*pte); // original physical address
+  uint64 ka = (uint64) kalloc(); // newly allocated physical address
+
+  if (ka == 0){
+    return -1;
+  } 
+  memmove((char*)ka, (char*)pa, PGSIZE); // copy the old page to the new page
+  kfree((void*)pa);
+  uint flags = PTE_FLAGS(*pte);
+  *pte = PA2PTE(ka) | flags | PTE_W;
+  *pte &= ~PTE_COW;
+  return 0;
+}
+
 //
 // handle an interrupt, exception, or system call from user space.
 // called from trampoline.S
@@ -67,32 +94,10 @@ usertrap(void)
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
-  } else if (r_scause() == 15 || r_scause() == 13) // page fault
+  } else if (r_scause() == 15) // write page fault
   {
-    pte_t *pte;
-    uint64 va = r_stval(); // page fault address
-    struct proc *p = myproc(); 
-    if((pte = walk(p->pagetable, va, 0)) == 0)
-      p->killed = 1; // pte should exist
-    if ((*pte & PTE_V) == 0)
-      p->killed = 1; // pte should be present
-    if ((*pte & PTE_COW) == 0)
-      p->killed = 1; // pte should be COW
-
-    // allocate a new page
-    uint64 pa = PTE2PA(*pte); // original physical address
-    uint64 ka = (uint64) kalloc(); // newly allocated physical address
-
-    if (ka == 0){
-      p->killed = 1; // there's no free memory
-    } else {
-      memmove((char*)ka, (char*)pa, PGSIZE); // copy the old page to the new page
-      va = PGROUNDDOWN(va);
-      uint flags = PTE_FLAGS(*pte);
-      uvmunmap(p->pagetable, va, 1, 1);
-      *pte = PA2PTE(ka) | flags | PTE_W;
-      *pte &= ~PTE_COW;
-    }
+    if (cowhandler(p->pagetable, r_stval()) < 0)
+      p->killed = 1;
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
@@ -108,6 +113,7 @@ usertrap(void)
 
   usertrapret();
 }
+
 
 //
 // return to user space
