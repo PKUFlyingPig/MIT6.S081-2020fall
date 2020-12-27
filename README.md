@@ -114,7 +114,15 @@ if you want to have a clean copy of the original lab handout, just go to the [co
   - Handle the parent-to-child memory copy in fork() correctly : modify uvmcopy(), which is similar to the modification you made to the uvmunmap() funcation.
   - Handle the case in which a process passes a valid address from sbrk() to a system call such as read or write, but the memory for that address has not yet been allocated : you only need to modify copyin() and copyout() function. Why we need to do that? because usertrap() only handle the page fault in the user program, but copyin() and copyout() are called in the kernel, which can not be handled by usertrap(). So you can just copy the code from usertrap() to handle this case. 
 
-Lab6 are in debugging .............
+### Lab6 COW
+
+---
+
+MIT's Q&A session will go through this lab step by step, you can check this [video](https://www.youtube.com/watch?v=S8ZTJKzhQao&feature=youtu.be]) for help.
+
+- You need a lock to protect your ref_count array
+- decrement the ref_count in the kfree function, I used to decrement it in the uvmunmap function but failed to pass the usertests.
+- you can write a specific function e.g. cowhandler to handle the COW page fault, then call it in both usertrap and copyout function.
 
 ### lab7 multithreading
 
