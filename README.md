@@ -24,7 +24,7 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 ## Hints for each lab
 
-### lab1: util
+### lab1 : util
 
 ----
 
@@ -75,7 +75,7 @@ if you want to have a clean copy of the original lab handout, just go to the [co
   - Don't forget to modify the copyin() and copyinstr() methods to call copyin_new and copyinstr_new. 
   - You also need to add the newly added functions into defs.h.
 
-### lab4 traps
+### lab4 : traps
 
 ----
 
@@ -98,7 +98,7 @@ if you want to have a clean copy of the original lab handout, just go to the [co
     - At first I add one more trapframe to save all the registers, but this implementation will not pass the usertests
     - You need to save s-registers, but I am a little confused about it. Since if the handler function follows the RISC-V calling convention, it needs to save the s-register before using it. So why the original process's s-registers get corrupted ?
 
-### lab5 Lazy
+### lab5 : lazy
 
 ---
 
@@ -114,7 +114,7 @@ if you want to have a clean copy of the original lab handout, just go to the [co
   - Handle the parent-to-child memory copy in fork() correctly : modify uvmcopy(), which is similar to the modification you made to the uvmunmap() funcation.
   - Handle the case in which a process passes a valid address from sbrk() to a system call such as read or write, but the memory for that address has not yet been allocated : you only need to modify copyin() and copyout() function. Why we need to do that? because usertrap() only handle the page fault in the user program, but copyin() and copyout() are called in the kernel, which can not be handled by usertrap(). So you can just copy the code from usertrap() to handle this case. 
 
-### Lab6 COW
+### Lab6 : COW
 
 ---
 
@@ -122,9 +122,9 @@ MIT's Q&A session will go through this lab step by step, you can check this [vid
 
 - You need a lock to protect your ref_count array
 - decrement the ref_count in the kfree function, I used to decrement it in the uvmunmap function but failed to pass the usertests.
-- you can write a specific function e.g. cowhandler to handle the COW page fault, then call it in both usertrap and copyout function.
+- you can write a specific function e.g. cowhandler to handle the COW page fault, then call it in both usertrap and copyout function (I didn't do that, so my code may look a little messy).
 
-### lab7 multithreading
+### lab7 : multithreading
 
 ----
 
@@ -135,3 +135,27 @@ MIT's Q&A session will go through this lab step by step, you can check this [vid
   - when you call insert() in put(), you already give the current head of the bucket as a variable to the insert() function, so if one thread has called insert but has not updated the head of the bucket, and now another thread calls insert() with an old head of the bucket, then the wrong occurs.
 - Barrier :
   - nothing special, remember that when one thread wake up, it will immediately acquire the lock.
+
+### Lab8 : locking
+
+---
+
+- Memory allocator (moderate) :
+  - You can choose to allocate free pages evenly to each CPU at the beginning, although I didn't do that.
+  - I choose to steal 1000 pages at a time.
+- Buffer cache (hard) :
+  - I don't recommend my solution, which took me only 10 minutes to pass the hard lab.
+  - I just copy the bcache 13 times to hack the lab.
+
+### Lab9 : file system
+
+---
+
+I know "Chapter 8: File system" in xv6 book is quite long and hard to understand, but read it patiently and thoroughly will save you a lot of time ! I personally find read the code first will help you understand (fs.c, file.c, sysfile.c, fs.h, file.h) .
+
+- Large files (moderate) :
+  - easy and straightforward
+- Symbolic links (moderate) :
+  - if you encounter "exec symlinktest failed", you may forget to add _symlinktest into the Makefile
+  - the function readi and writei may be your friend, you don't bother to write your own code to write data into inode's data block.
+  - if you encounter "panic: iget: no inodes", you may forget to iput(ip). I recommend you use iunlockput(ip) for convenience.
