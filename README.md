@@ -18,13 +18,13 @@ git checkout util
 
 and now you are in the utils branch which contains my solution to the specific lab. 
 
-if you want to have a clean copy of the original lab handout, just go to the [course website](https://pdos.csail.mit.edu/6.828/2020/schedule.html) and follow the lab guidance. Hope you enjoy your OS journey.
+if you want to have a clean copy of the original lab handout, just go to the [course website](https://pdos.csail.mit.edu/6.828/2020/schedule.html) and follow the lab guidance. Also, you can watch the course videos on the course website. Hope you enjoy your OS journey.
 
 
 
 ## Lab Reports
 
-For each lab, I wrote a brief report on my implementation, explaining the important part of my code and how to complete the lab step by step.
+For each lab, I wrote a brief report on my implementation, explaining the important part of my code and how to complete the lab step by step. (I wrote these reports in Chinese)
 
 - [Lab Util](reports/Utils.md)
 - [Lab syscall](reports/syscall.md)
@@ -36,11 +36,15 @@ For each lab, I wrote a brief report on my implementation, explaining the import
 - [Lab lock](reports/lock.md)
 - [Lab fs](reports/fs.md)
 
-## Reading notes
+## Reading materials
+
+I highly recommend you read the [xv6 book](book-riscv-rev1.pdf) before watching the course videos and doing the labs.
 
 
 
 ## Hints for each lab
+
+You should do the labs on your own at first, but if you encounter some bugs or want to get some high-level hints, this part may help you.
 
 ### lab1 : util
 
