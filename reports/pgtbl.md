@@ -216,10 +216,3 @@ userinit(void)
   release(&p->lock);
 }
 ```
-
-### 3. 代码测试
-
----
-
-![image-20210110211349689](/Users/apple/Library/Application Support/typora-user-images/image-20210110211349689.png)
-

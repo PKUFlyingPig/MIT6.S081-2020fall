@@ -125,9 +125,3 @@ sys_sysinfo(void)
   return 0;
 }
 ```
-
-### 3. 代码测试
-
----
-
-![image-20210108215607025](/Users/apple/Library/Application Support/typora-user-images/image-20210108215607025.png)

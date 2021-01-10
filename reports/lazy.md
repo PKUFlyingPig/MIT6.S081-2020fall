@@ -182,14 +182,3 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 copyin函数的功能是从用户地址空间复制数据到内核地址空间（两者页表不同），而它的实现就是通过walkaddr函数手动实现地址翻译的过程，得到用户数据的物理地址，然后将用户物理地址空间的数据复制到内核地址。但如果用户提供的虚拟地址还未分配的话就需要我们先分配物理页，然后重复上面的操作。
 
 copyout函数的修改完全类似。
-
-
-
-### 3. 代码测试
-
----
-
-利用lab提供的lazytests和usertests测试框架，结果如图：
-
-![image-20201208133904347](/Users/apple/Library/Application Support/typora-user-images/image-20201208133904347.png)
-

@@ -334,11 +334,3 @@ int main(int argc, char const *argv[])
 }
 ```
 
-### 3. 代码测试
-
----
-
-<img src="/Users/apple/Library/Application Support/typora-user-images/image-20210108213932540.png" alt="image-20210108213932540" style="zoom:50%;" />
-
- 
-

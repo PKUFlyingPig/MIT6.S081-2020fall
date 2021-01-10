@@ -217,14 +217,3 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
 }
 
 ```
-
-### 3. 测试
-
----
-
-测试共分为两类，第一类是copy-on-write的测试，第二类是模拟用户使用操作系统的一系列回归测试。
-
-![image-20201227111721270](/Users/apple/Library/Application Support/typora-user-images/image-20201227111721270.png)
-
-![image-20201227111734920](/Users/apple/Library/Application Support/typora-user-images/image-20201227111734920.png)
-

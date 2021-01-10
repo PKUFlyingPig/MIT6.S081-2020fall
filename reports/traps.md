@@ -218,9 +218,3 @@ sys_sigreturn(void)
   return 0;
 }
 ```
-
-### 3. 代码测试
-
----
-
-![image-20210110214813807](/Users/apple/Library/Application Support/typora-user-images/image-20210110214813807.png)

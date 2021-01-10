@@ -162,10 +162,3 @@ if (ip->type == T_SYMLINK && !(omode & O_NOFOLLOW)) {
 注意如果软链接文件链接到了另一个软链接文件，系统需要递归地查找直到找到第一个非软链接的文件（对于成环的情况，需要返回-1）。
 
 另外如果用户在打开文件时添加了O_NOFOLLOW模式，那么系统需要像处理正常文件一样将软链接文件打开。
-
-### 3. 代码测试
-
----
-
- ![image-20210109233718822](/Users/apple/Library/Application Support/typora-user-images/image-20210109233718822.png)
-

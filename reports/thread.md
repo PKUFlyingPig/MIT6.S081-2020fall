@@ -184,14 +184,3 @@ barrier()
   pthread_mutex_unlock(&bstate.barrier_mutex);
 }
 ```
-
-
-
-### 3. 代码测试：
-
-----
-
-运行lab附带的测试代码，运行结果如下：
-
-![image-20201124193440765](/Users/apple/Library/Application Support/typora-user-images/image-20201124193440765.png)
-

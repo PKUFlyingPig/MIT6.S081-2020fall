@@ -219,14 +219,3 @@ brelse(struct buf *b)
   release(&bcache.hashlock[hashcode]);
 }
 ```
-
-
-
-#### 4. 代码测试
-
----
-
-
-
-![image-20210104175112665](/Users/apple/Library/Application Support/typora-user-images/image-20210104175112665.png)
-
