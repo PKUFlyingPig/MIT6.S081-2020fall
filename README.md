@@ -22,6 +22,12 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 
 
 
+## Lab Reports
+
+For each lab, I wrote a brief report on my implementation, explaining the important part of my code and how to complete the lab step by step.
+
+- [Lab Util](./reports/Lab Utils.md)
+
 ## Hints for each lab
 
 ### lab1 : util
