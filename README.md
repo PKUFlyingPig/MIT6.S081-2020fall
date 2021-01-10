@@ -27,6 +27,18 @@ if you want to have a clean copy of the original lab handout, just go to the [co
 For each lab, I wrote a brief report on my implementation, explaining the important part of my code and how to complete the lab step by step.
 
 - [Lab Util](reports/Utils.md)
+- [Lab syscall](reports/syscall.md)
+- [Lab pgtbl](reports/pgtbl.md)
+- [Lab traps](reports/traps.md)
+- [Lab lazy](reports/lazy.md)
+- [Lab COW](reports/COW.md)
+- [Lab thread](reports/thread.md)
+- [Lab lock](reports/lock.md)
+- [Lab fs](reports/fs.md)
+
+## Reading notes
+
+
 
 ## Hints for each lab
 
