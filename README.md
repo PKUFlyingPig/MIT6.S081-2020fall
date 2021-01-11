@@ -40,7 +40,11 @@ For each lab, I wrote a brief report on my implementation, explaining the import
 
 I highly recommend you read the [xv6 book](book-riscv-rev1.pdf) before watching the course videos and doing the labs.
 
+### Wanna Learn More ?
 
+---
+
+Check out [this repository](https://github.com/PKUFlyingPig/Self-learning-Computer-Science) which contains all my self-learning materials : )
 
 ## Hints for each lab
 
