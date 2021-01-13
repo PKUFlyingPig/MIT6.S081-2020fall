@@ -35,6 +35,7 @@ For each lab, I wrote a brief report on my implementation, explaining the import
 - [Lab thread](reports/thread.md)
 - [Lab lock](reports/lock.md)
 - [Lab fs](reports/fs.md)
+- [Lab Mmap](reports/Mmap.md)
 
 ## Reading materials
 
