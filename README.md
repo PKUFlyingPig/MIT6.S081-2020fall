@@ -40,9 +40,7 @@ For each lab, I wrote a brief report on my implementation, explaining the import
 
 I highly recommend you read the [xv6 book](book-riscv-rev1.pdf) before watching the course videos and doing the labs.
 
-### Wanna Learn More ?
-
----
+## Wanna Learn More ?
 
 Check out [this repository](https://github.com/PKUFlyingPig/Self-learning-Computer-Science) which contains all my self-learning materials : )
 
@@ -51,8 +49,6 @@ Check out [this repository](https://github.com/PKUFlyingPig/Self-learning-Comput
 You should do the labs on your own at first, but if you encounter some bugs or want to get some high-level hints, this part may help you.
 
 ### lab1 : util
-
-----
 
 **every program must end with exit(0)!!**
 
@@ -66,8 +62,6 @@ You should do the labs on your own at first, but if you encounter some bugs or w
 
 ### lab2 : syscall
 
-----
-
 **read the chapter 2 and 3.5 4.4 4.5 carefully and make sure to understand what you are going to do**
 
 - system call tracing (moderate) : all the modification you need to do are listed in the lab guidance except for the entry you need to add for the syscall declaration and the syscall function pointer array  in the kernel/syscall.c (about line 90 to 120).
@@ -79,8 +73,6 @@ You should do the labs on your own at first, but if you encounter some bugs or w
   - freemem : read chapter 3.5 in xv6 book may make you understand what happens in the kalloc.c. (kmem is a list of free pages and each page is 4096 bytes)
 
 ### lab3 : pgtbl 
-
-----
 
 **warning : this lab is extremly time-consuming**
 
@@ -103,8 +95,6 @@ You should do the labs on your own at first, but if you encounter some bugs or w
 
 ### lab4 : traps
 
-----
-
 - RISCV - assembly (easy) :
   - a0-7 contains arguments to functions. a2 holds 13 in main's call to printf.
   - at address 0x26, we can see the complier directly loads 12 into a1 register, which is just the return value of f(8) + 1.
@@ -126,8 +116,6 @@ You should do the labs on your own at first, but if you encounter some bugs or w
 
 ### lab5 : lazy
 
----
-
 - eliminate allocation from sbrk() (easy)
   - so easy
 - lazy allocation (moderate)
@@ -142,8 +130,6 @@ You should do the labs on your own at first, but if you encounter some bugs or w
 
 ### Lab6 : COW
 
----
-
 MIT's Q&A session will go through this lab step by step, you can check this [video](https://www.youtube.com/watch?v=S8ZTJKzhQao&feature=youtu.be]) for help.
 
 - You need a lock to protect your ref_count array
@@ -151,8 +137,6 @@ MIT's Q&A session will go through this lab step by step, you can check this [vid
 - you can write a specific function e.g. cowhandler to handle the COW page fault, then call it in both usertrap and copyout function (I didn't do that, so my code may look a little messy).
 
 ### lab7 : multithreading
-
-----
 
 - Uthread (moderate) :
   - your code can be quite similar to the code in switch.S and proc.h (almost the same)
@@ -164,8 +148,6 @@ MIT's Q&A session will go through this lab step by step, you can check this [vid
 
 ### Lab8 : locking
 
----
-
 - Memory allocator (moderate) :
   - You can choose to allocate free pages evenly to each CPU at the beginning, although I didn't do that.
   - I choose to steal 1000 pages at a time.
@@ -175,8 +157,6 @@ MIT's Q&A session will go through this lab step by step, you can check this [vid
 
 ### Lab9 : file system
 
----
-
 I know "Chapter 8: File system" in xv6 book is quite long and hard to understand, but read it patiently and thoroughly will save you a lot of time ! I personally find read the code first will help you understand (fs.c, file.c, sysfile.c, fs.h, file.h) .
 
 - Large files (moderate) :
@@ -185,3 +165,12 @@ I know "Chapter 8: File system" in xv6 book is quite long and hard to understand
   - if you encounter "exec symlinktest failed", you may forget to add _symlinktest into the Makefile
   - the function readi and writei may be your friend, you don't bother to write your own code to write data into inode's data block.
   - if you encounter "panic: iget: no inodes", you may forget to iput(ip). I recommend you use iunlockput(ip) for convenience.
+
+### Lab10 : Mmap
+
+mmap is a very important feature in today's OS, if you run strace for any program, you will see many mmap system call. This lab will let you have a taste for the memory mapped file.
+
+- use filedup to increment file's reference, use fileclose to decrement file's reference.
+- you can write the pagefault handler code in usertrap based on your Lazy lab implementation.
+
+- the mmaptest only tests files whose size is PGSIZE-aligned, so I didn't handle the common case. You may make use of this to simplify your code.
