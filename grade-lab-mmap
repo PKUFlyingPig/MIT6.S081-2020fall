@@ -9,7 +9,7 @@ r = Runner(save("xv6.out"))
 def test_mmaptest():
     r.run_qemu(shell_script([
         'mmaptest'
-    ]), timeout=180)
+    ]), timeout=1800)
 
 @test(20, "mmaptest: mmap f", parent=test_mmaptest)
 def test_mmaptest_mmap_f():
@@ -47,7 +47,7 @@ def test_mmaptest_fork_test():
 def test_usertests():
     r.run_qemu(shell_script([
         'usertests'
-    ]), timeout=300)
+    ]), timeout=3000)
     r.match('^ALL TESTS PASSED$')
 
 @test(1, "time")
