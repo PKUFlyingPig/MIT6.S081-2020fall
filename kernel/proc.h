@@ -82,6 +82,18 @@ struct trapframe {
 
 enum procstate { UNUSED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+// mmap lab specific
+// virtual memory area, recording the address, length, 
+// permissions, file, etc. for a virtual memory range created by mmap.
+struct vma{
+  int valid;
+  uint64 addr;
+  int length;
+  int prot;
+  int flags;
+  struct file *mapfile;
+};
+
 // Per-process state
 struct proc {
   struct spinlock lock;
@@ -103,4 +115,6 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  // mmap lab 
+  struct vma vmas[NVMA];               // Process virtual memory area
 };

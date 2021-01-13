@@ -484,3 +484,87 @@ sys_pipe(void)
   }
   return 0;
 }
+
+uint64
+sys_mmap(void)
+{
+  uint64 addr;
+  int length, prot, flags, fd, i;
+  struct proc* p;
+  if (argint(1, &length) < 0 || argint(2, &prot) < 0 ||
+      argint(3, &flags) < 0 || argint(4, &fd) < 0)
+    return -1;
+  p = myproc();
+  struct file *mapfile = p->ofile[fd];
+  if ((!mapfile->writable)&&(prot&PROT_WRITE)&&(!(flags&MAP_PRIVATE)))
+    return -1;
+  for (i = 0; i < NVMA; i++) {
+    // allocate vma struct
+    if (p->vmas[i].valid == 0) {
+      p->vmas[i].valid = 1;
+      p->vmas[i].addr = addr = p->sz;
+      p->vmas[i].length = length;
+      p->vmas[i].prot = prot;
+      p->vmas[i].flags = flags;
+      p->vmas[i].mapfile = mapfile;
+      filedup(p->ofile[fd]);
+      break;
+    }
+  }
+  // have no vma slot
+  if (i == NVMA) {
+    return -1;
+  }
+  p->sz += length; // lazy mapping
+  return addr;
+}
+
+uint64
+sys_munmap(void)
+{
+  uint64 addr;
+  int length, i;
+  struct proc* p;
+  if (argaddr(0, &addr) < 0 || argint(1, &length) < 0)
+    return -1;
+  p = myproc();
+  for (i = 0; i < NVMA; i++) {
+    if (p->vmas[i].valid == 1) {
+      if (p->vmas[i].addr <= addr && (p->vmas[i].addr + p->vmas[i].length) > addr)
+            break;
+    }
+  }
+
+  // have no vma slot
+  if (i == NVMA) {
+    return -1;
+  }
+
+  struct vma *vmap = &p->vmas[i];
+  if (vmap->flags & MAP_SHARED) { 
+    filewrite(vmap->mapfile, addr, length);
+  }
+
+  // printf("addr, length = %d, %d\n", addr, length);
+  // printf("vmap->addr, vmap->length = %d, %d\n", vmap->addr, vmap->length);
+  if (vmap->addr == addr && vmap->length == length) {
+    // unmap the whole vma
+    uvmunmap(p->pagetable, addr, length/PGSIZE, 1);
+    fileclose(vmap->mapfile);
+    vmap->valid = 0;
+  } else if (vmap->addr == addr) {
+    // unmap from the beginning
+    uvmunmap(p->pagetable, addr, length/PGSIZE, 1);
+    vmap->addr += length;
+    vmap->length -= length;
+  } else if (vmap->addr + vmap->length == addr + length){
+    // unmap from the end
+    uvmunmap(p->pagetable, addr, length/PGSIZE, 1);
+    vmap->length -= length;
+  }
+
+  return 0;
+}
+
+
+
